@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LayerBru – 3D Printing Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e1117; --surface: #161b26; --surface-2: #1e2535;
+    --coral: #e8604a; --coral-dim: #b84a37;
+    --text: #e8e8e2; --muted: #8a8f9e; --border: rgba(255,255,255,0.07);
+    --mono: 'Share Tech Mono', monospace; --display: 'Bebas Neue', sans-serif; --body: 'Inter', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 16px; line-height: 1.7; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(14,17,23,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 5vw; height: 60px; }
+  .nav-logo { font-family: var(--display); font-size: 26px; letter-spacing: 0.08em; color: var(--text); text-decoration: none; }
+  .nav-logo span { color: var(--coral); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-family: var(--mono); font-size: 13px; color: var(--muted); text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--coral); }
+  #home { min-height: 100vh; display: flex; align-items: center; padding: 120px 5vw 80px; position: relative; overflow: hidden; }
+  .hero-grid-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(232,96,74,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(232,96,74,0.04) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%); }
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+  .hero-eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; color: var(--coral); text-transform: uppercase; margin-bottom: 1.5rem; }
+  h1 { font-family: var(--display); font-size: clamp(64px, 10vw, 120px); line-height: 0.95; letter-spacing: 0.02em; color: var(--text); margin-bottom: 1.5rem; }
+  h1 em { font-style: normal; color: var(--coral); }
+  .hero-sub { font-size: 18px; color: var(--muted); max-width: 480px; line-height: 1.6; margin-bottom: 2.5rem; }
+  .btn-primary { display: inline-block; background: var(--coral); color: #fff; font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 14px 32px; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+  .btn-primary:hover { background: var(--coral-dim); transform: translateY(-1px); }
+  .btn-ghost { display: inline-block; background: transparent; color: var(--muted); font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 14px 32px; border: 1px solid var(--border); cursor: pointer; margin-left: 12px; transition: border-color 0.2s, color 0.2s; }
+  .btn-ghost:hover { border-color: var(--coral); color: var(--coral); }
+  .stat-strip { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; padding: 2rem 5vw; gap: 3rem; overflow-x: auto; }
+  .stat { min-width: 140px; }
+  .stat-val { font-family: var(--display); font-size: 42px; color: var(--coral); line-height: 1; }
+  .stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+  section { padding: 100px 5vw; }
+  .section-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.25em; color: var(--coral); text-transform: uppercase; margin-bottom: 1rem; }
+  h2 { font-family: var(--display); font-size: clamp(40px, 6vw, 72px); line-height: 1; letter-spacing: 0.02em; margin-bottom: 1.5rem; }
+  #about { background: var(--bg); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; margin-top: 3rem; }
+  .about-text p { color: var(--muted); margin-bottom: 1rem; font-size: 16px; }
+  .about-text p strong { color: var(--text); font-weight: 500; }
+  .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+  .feature-cell { background: var(--surface); padding: 1.5rem; }
+  .feature-icon { font-size: 24px; margin-bottom: 0.75rem; color: var(--coral); font-family: var(--mono); }
+  .feature-title { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); margin-bottom: 0.5rem; }
+  .feature-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  #contact { background: var(--surface); border-top: 1px solid var(--border); }
+  .contact-inner { max-width: 640px; }
+  .contact-inner p { color: var(--muted); font-size: 17px; margin-bottom: 2.5rem; line-height: 1.7; }
+  .contact-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+  .contact-row:last-of-type { border-bottom: none; }
+  .contact-key { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; min-width: 80px; }
+  .contact-val a { color: var(--coral); text-decoration: none; font-size: 15px; transition: opacity 0.2s; }
+  .contact-val a:hover { opacity: 0.75; }
+  footer { background: var(--bg); border-top: 1px solid var(--border); padding: 2rem 5vw; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .footer-logo { font-family: var(--display); font-size: 20px; letter-spacing: 0.08em; color: var(--muted); }
+  .footer-logo span { color: var(--coral); }
+  .footer-copy { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+  @media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; gap: 2.5rem; } .about-features { grid-template-columns: 1fr; } .nav-links { display: none; } h1 { font-size: 56px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#home" class="nav-logo">LAYER<span>BRU</span></a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="home">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">South African 3D Printing Studio</p>
+    <h1>MADE<br>LAYER<br><em>BY LAYER</em></h1>
+    <p class="hero-sub">Custom 3D printed products designed and produced right here in South Africa. Braai accessories, golf gear, bespoke items — built to order.</p>
+    <a href="#about" class="btn-primary">Learn more</a>
+    <a href="#contact" class="btn-ghost">Get in touch</a>
+  </div>
+</section>
+
+<div class="stat-strip">
+  <div class="stat"><div class="stat-val">4</div><div class="stat-label">Colour printing</div></div>
+  <div class="stat"><div class="stat-val">PLA</div><div class="stat-label">& PETG materials</div></div>
+  <div class="stat"><div class="stat-val">SA</div><div class="stat-label">Made locally</div></div>
+</div>
+
+<section id="about">
+  <p class="section-eyebrow">Who we are</p>
+  <h2>BUILT FROM<br>THE GROUND UP</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>LayerBru is a <strong>South African 3D printing business</strong> run by two brothers who believe great products shouldn't require a factory or a minimum order of a thousand units.</p>
+      <p>We design and print everything in-house on professional-grade equipment, giving us full control over quality, colour, and material — from first prototype to final product.</p>
+      <p>Whether you need something off our catalogue or a completely <strong>custom design</strong>, we're set up to make it happen quickly and at a price that makes sense for the South African market.</p>
+    </div>
+    <div class="about-features">
+      <div class="feature-cell">
+        <div class="feature-icon">◈</div>
+        <div class="feature-title">Multi-colour prints</div>
+        <div class="feature-desc">Up to 4-colour output from a single print run — no painting required.</div>
+      </div>
+      <div class="feature-cell">
+        <div class="feature-icon">◉</div>
+        <div class="feature-title">Material choice</div>
+        <div class="feature-desc">PLA for detailed work, PETG where you need heat and impact resistance.</div>
+      </div>
+      <div class="feature-cell">
+        <div class="feature-icon">◫</div>
+        <div class="feature-title">Custom designs</div>
+        <div class="feature-desc">Bring your idea or brief us — we'll design and print it for you.</div>
+      </div>
+      <div class="feature-cell">
+        <div class="feature-icon">◌</div>
+        <div class="feature-title">Local delivery</div>
+        <div class="feature-desc">Ship nationwide or arrange collection. No overseas lead times.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <p class="section-eyebrow">Get in touch</p>
+  <h2>LET'S MAKE<br>SOMETHING</h2>
+  <div class="contact-inner">
+    <p>Have a project in mind, or want to know more about what we offer? Drop us an email and we'll get back to you quickly.</p>
+    <div class="contact-row">
+      <span class="contact-key">Email</span>
+      <span class="contact-val"><a href="mailto:layerbru@gmail.com">layerbru@gmail.com</a></span>
+    </div>
+    <div class="contact-row">
+      <span class="contact-key">Location</span>
+      <span class="contact-val" style="font-size:15px; color: var(--muted);">South Africa</span>
+    </div>
+    <div class="contact-row">
+      <span class="contact-key">Website</span>
+      <span class="contact-val"><a href="https://layerbru.co.za">layerbru.co.za</a></span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">LAYER<span>BRU</span></div>
+  <div class="footer-copy">© 2025 LayerBru · South Africa</div>
+</footer>
+
+</body>
+</html>
